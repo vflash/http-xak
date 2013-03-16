@@ -1,0 +1,26 @@
+{
+	"name" : "scmod",
+	"description": "http(s) hack",
+	"keywords": ["http", "https"],
+	"version": "0.1.0",
+	"main" : "./http-xak.js",
+
+	"bugs": {
+		"url": "https://github.com/vflash/http-xak/issues"
+	},
+
+	"author":{ 
+		"name" : "Vopilovskiy Konstantin",
+		"email" : "flash.vkv@gmail.com",
+		"url" : "http://vflash.ru"
+	},
+	
+	"files":["http-xak.js"],
+	
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vflash/http-xak"
+	}
+
+}
+
