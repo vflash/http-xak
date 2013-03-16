@@ -15,7 +15,7 @@
 		"url" : "http://vflash.ru"
 	},
 	
-	"files":["http-xak.js"],
+	"files":["http-xak.js", "LICENSE", "README.md"],
 	"engines" : { "node" : ">=0.8 <0.11" }
 	
 	"repository": {
