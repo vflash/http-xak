@@ -68,7 +68,7 @@ Agent.prototype.addRequest = function(req, host, port, localAddress) {
 		});
 
 		s.on('error', function x_error() {
-			if ( !(self.requests[name]||false).length || (this.sockets[name]||false).length ) {
+			if ( !(self.requests[name]||false).length || (self.sockets[name]||false).length ) {
 				// console.log('-- error connect --');
 				return;
 			};
