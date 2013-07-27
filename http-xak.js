@@ -128,7 +128,7 @@ Agent.prototype.createSocket = function(name, host, port, localAddress, req) {
 		//s.busyWork = true;
 		//self.emit('free', s, host, port, localAddress);
 		s.destroy();
-	}, 1200);
+	}, 7200);
   };
   var onClose = function(err) {
     // This is the only place where sockets get removed from the Agent.

@@ -2,7 +2,7 @@
 	"name" : "http-xak",
 	"description": "http(s) hack",
 	"keywords": ["http", "https"],
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"main" : "./http-xak.js",
 
 	"bugs": {
