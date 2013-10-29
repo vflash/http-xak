@@ -1,3 +1,8 @@
+if (!/v0\.(10|9|8|7|6)(\.|$)/.test(process.version) ) {
+        return;
+};
+
+
 ﻿var util = require('util');
 
 var HTTPS = require('https');
