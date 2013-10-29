@@ -1,9 +1,11 @@
+
 if (!/v0\.(10|9|8|7|6)(\.|$)/.test(process.version) ) {
-        return;
+	return;
 };
 
+var debug = false;
 
-﻿var util = require('util');
+var util = require('util');
 
 var HTTPS = require('https');
 var HTTP = require('http');
@@ -14,6 +16,42 @@ var _requests_https = {};
 var _requests_http = {};
 var _sockets_https = {};
 var _sockets_http = {};
+
+
+setInterval(sInf, 1000 * 60 * 10);
+setTimeout(sInf, 2000);
+
+function sInf() {
+	socInfo('https', _sockets_https);
+	socInfo('http', _sockets_http);
+};
+
+var uix = Math.random().toString(36).substr(2,3);
+
+function socInfo(name, ss) {
+	var i = 0, s, x, v;
+
+	//if (debug) console.log('- sockets info - ' + name);
+	
+	for(x in ss) {
+		a = ss[x];
+
+		for(i = 0; i < a.length ; i++) {
+			s = a[i];
+			if (!v) {
+				v = true;
+				if (debug) console.log('----------------------------------');
+			}
+
+			if (debug) console.log('> '+ uix +' - sockets '+name+' - ' + i + ' - ' + !!s.destroyed + ' -- ' + !!s.busyWork + ' -- '+ String(new Date() - s._tmCreate).replace(/(\d{1,3})$/, '.$1') + ' > ' + x );
+			if ( (new Date() - s._tmCreate) > 1087000 ) {
+				if (debug) console.log('<<< finish sockets - ' + name);
+				s.destroy();
+			};
+		};
+	};
+}
+
 
 function init_vflashFix(agent) {
 	if (agent._init_vflashFix) return;
@@ -33,7 +71,10 @@ function getFreeSocket(sockets) {
 	var i = sockets.length, s;
 
 	while(s = sockets[--i]) {
-		if (!s.busyWork && !s.destroyed) return s;
+		if (!s.busyWork && !s.destroyed && (+new Date() - s._tmCreate) < 721000 ) {
+			s._tmCreate = +new Date();
+			return s;
+		};
 	};
 };
 
@@ -47,7 +88,7 @@ Agent.prototype.addRequest = function(req, host, port, localAddress) {
 	};
 
 	if (!this.sockets[name]) this.sockets[name] = [];
-	//console.log('-- addRequest - '+ (this.sockets[name].length) +' --');
+	//if (debug) console.log('-- addRequest - '+ (this.sockets[name].length) +' --');
 
 	var s;
 	if (s = getFreeSocket(this.sockets[name])) {
@@ -67,18 +108,29 @@ Agent.prototype.addRequest = function(req, host, port, localAddress) {
 		var s = this.createSocket(name, host, port, localAddress, req);
 		s.busyWork = true; 
 
+		/*
+		var tmcn = setTimeout(function() {
+			if (debug) console.log('-- timmeout connect -- 12000 --- ' + name )
+		}, 12000)
+		*/
+		
 		s.on(s.getPeerCertificate ? 'secureConnect' : 'connect', function() {
+			//clearTimeout(tmcn);
+
 			s.busyWork = false;
 			s.emit('free');
 		});
 
 		s.on('error', function x_error() {
+			//clearTimeout(tmcn);
+			s.busyWork = 'x-error';
+
 			if ( !(self.requests[name]||false).length || (self.sockets[name]||false).length ) {
-				// console.log('-- error connect --');
+				// if (debug) console.log('-- error connect --');
 				return;
 			};
 
-			console.log('-- !! error req connect !! --');
+			if (debug) console.log('-- !! error req connect !! --');
 		});
 	};
 };
@@ -105,6 +157,8 @@ Agent.prototype.createSocket = function(name, host, port, localAddress, req) {
 
   var s = self.createConnection(options);
   
+  s._tmCreate = +new Date();
+  
   if (!self.sockets[name]) self.sockets[name] = [];
   this.sockets[name].push(s);
 
@@ -118,7 +172,8 @@ Agent.prototype.createSocket = function(name, host, port, localAddress, req) {
 	};
 
 	if (self.requests[name] && self.requests[name].length) {
-		//self.emit('free', s, host, port, localAddress);
+		self.emit('free', s, host, port, localAddress);
+		return;
 
 		self.requests[name].shift().onSocket(s);
 		if (self.requests[name].length === 0) {
@@ -133,7 +188,7 @@ Agent.prototype.createSocket = function(name, host, port, localAddress, req) {
 		//s.busyWork = true;
 		//self.emit('free', s, host, port, localAddress);
 		s.destroy();
-	}, 7200);
+	}, 1200);
   };
   var onClose = function(err) {
     // This is the only place where sockets get removed from the Agent.
@@ -157,3 +212,4 @@ Agent.prototype.createSocket = function(name, host, port, localAddress, req) {
 
   return s;
 };
+
