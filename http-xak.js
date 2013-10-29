@@ -17,10 +17,11 @@ var _requests_http = {};
 var _sockets_https = {};
 var _sockets_http = {};
 
-
-setInterval(sInf, 1000 * 60 * 10);
-setTimeout(sInf, 2000);
-
+if (false) {
+	setInterval(sInf, 1000 * 60 * 10);
+	setTimeout(sInf, 2000);
+};
+	
 function sInf() {
 	socInfo('https', _sockets_https);
 	socInfo('http', _sockets_http);
