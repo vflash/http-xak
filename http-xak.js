@@ -11,6 +11,7 @@ var HTTPS = require('https');
 var HTTP = require('http');
 var Agent = HTTP.Agent;
 
+HTTP.globalAgent.maxSockets = Math.max(8, HTTP.globalAgent.maxSockets);
 
 var _requests_https = {};
 var _requests_http = {};
